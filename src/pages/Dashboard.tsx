@@ -9,6 +9,7 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
   const [chartData, setChartData] = useState<[number, number][] | null>(null);
+  const [selectedCoin, setSelectedCoin] = useState('bitcoin');
 
   useEffect(() => {
     async function fetchData() {
@@ -33,6 +34,14 @@ export default function Dashboard() {
     return () => clearInterval(interval); // cleanup when component unmounts
   }, []);
 
+  useEffect(() => {
+    async function loadChart() {
+      const history = await getCryptoHistory(selectedCoin);
+      setChartData(history.prices);
+    }
+    loadChart();
+  }, [selectedCoin]);
+
   if (loading) {
     return (
       <Box
@@ -47,7 +56,7 @@ export default function Dashboard() {
   }
 
   return (
-    <Box sx={{ flexGrow: 1, p: 3, width: '100%' }}>
+    <Box sx={{ flexGrow: 1, p: 6, width: '100%' }}>
       {/* make the inner panel full width and give horizontal padding */}
       <Box
         sx={{
@@ -75,17 +84,20 @@ export default function Dashboard() {
             Object.entries(data).map(([coin, info]) => (
               <Grid item xs={10} sm={6} md={3} lg={2} key={coin}>
                 <Paper
-                  elevation={4}
+                  elevation={selectedCoin === coin ? 8 : 4} // 🔥 More shadow if selected
                   sx={{
-                    minHeight: 120,
+                    height: 120,
                     display: 'flex',
                     flexDirection: 'column',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    transition: '0.3s',
-                    '&:hover': { transform: 'scale(1.03)', boxShadow: 6 },
-                    px: 1,
+                    transition: '0.2s',
+                    cursor: 'pointer',
+                    border:
+                      selectedCoin === coin ? '2px solid #1976d2' : 'none', // ✅ Highlight selected
+                    '&:hover': { transform: 'scale(1.05)', boxShadow: 6 },
                   }}
+                  onClick={() => setSelectedCoin(coin)} // ✅ Select coin on click
                 >
                   <Typography variant='h6' sx={{ textTransform: 'capitalize' }}>
                     {coin}
@@ -100,7 +112,7 @@ export default function Dashboard() {
 
         {chartData && (
           <Box mt={5} sx={{ width: '100%' }}>
-            <CryptoChart name='Bitcoin' prices={chartData} />
+            <CryptoChart name={selectedCoin} prices={chartData} />
           </Box>
         )}
       </Box>

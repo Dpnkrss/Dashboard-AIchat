@@ -5,7 +5,14 @@ import Dashboard from './pages/Dashboard';
 
 export default function App() {
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        height: '100vh',
+        overflow: 'hidden',
+      }}
+    >
       <Navbar />
 
       <Box sx={{ display: 'flex', flex: 1 }}>
@@ -16,7 +23,7 @@ export default function App() {
           sx={{
             flexGrow: 1,
             bgcolor: '#f5f5f5',
-            p: 3,
+            p: 4,
             ml: { sm: `${drawerWidth}px` },
             width: { sm: `calc(100% - ${drawerWidth}px)` },
           }}
